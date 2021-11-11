@@ -1,0 +1,34 @@
+{
+    "name": "danielbrendel/rfcrawler",
+	"version": "1.0",
+    "description": "PHP Reddit Feed Crawler",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Daniel Brendel",
+            "email": "dbrendel1988@gmail.com"
+        }
+    ],
+    "keywords": [
+        "reddit",
+		"crawler",
+        "library",
+        "php"
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+	"require": {
+        "php": "^8"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    },
+    "autoload": {
+        "psr-4": {
+            "RFCrawler\\": "src/"
+        }
+    },
+    "autoload-dev": {
+    }
+}

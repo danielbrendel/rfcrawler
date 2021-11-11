@@ -1,0 +1,17 @@
+<phpunit 
+		stopOnError="false"
+		stopOnFailure="false"
+		stopOnIncomplete="false"
+		stopOnSkipped="false"
+		stopOnRisky="false"
+		bootstrap="tests/bootstrap.php"
+	>
+	
+	<testsuites>
+		<testsuite name="Testcases">
+			<directory>tests</directory>
+		</testsuite>
+	</testsuites>
+	
+	<php></php>
+</phpunit>
