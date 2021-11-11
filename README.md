@@ -17,14 +17,15 @@ require_once __DIR__ . '/../vendor/autoload.php'; //Don't forget to use Composer
 use RFCrawler\RFCrawler; //Require the package class you want to use
 
 $obj = new RFCrawler('URL to subreddit here'); //Instantiate a new object instance to your feed
-$posts = $obj->fetchPosts(); //Fetch posts. Additionally pass one of the FETCH_TYPE_* constants in order to specify the sorting type
+$postsRss = $obj->fetchFromRss(); //Fetch posts from RSS. Additionally pass one of the FETCH_TYPE_* constants in order to specify the sorting type, and secondly an array with URLS of which to filter from the posts
+$postsRss = $obj->fetchFromJson(); //Fetch posts from JSON. Additionally pass one of the FETCH_TYPE_* constants in order to specify the sorting type, and secondly an array with URLS of which to filter from the posts
 
 foreach ($posts as $post) {
     //Access the following attributes from $post:
     // - $post->title contains the title
     // - $post->link contains the link to the Reddit post
     // - $post->media contains an image if the post is an image
-    // - $post->author contains the author information (name for username and uri for link to profile)
+    // - $post->author contains the author information (either only name when fetching from JSON or name for username and uri for link to profile)
 }
 ```
 
