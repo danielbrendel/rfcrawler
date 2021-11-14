@@ -39,13 +39,17 @@ class RFCrawler {
 	public string $url;
 	
 	/**
-	 * Constructor to save URL
+	 * Constructor for instantiation
 	 * 
 	 * @return void
 	 */
-	public function __construct($url)
+	public function __construct($url, $user_agent = '')
 	{
 		$this->url = self::URL_REDDIT . '/' . $url;
+
+		if ($user_agent !== '') {
+			ini_set('user_agent', $user_agent);
+		}
 	}
 	
 	/**

@@ -8,6 +8,19 @@ use RFCrawler\RFCrawler;
  */
 final class RFCrawlerTest extends TestCase
 {
+    public function testConstruct()
+    {
+        $obj = new RFCrawler('/r/gamedevscreens/');
+        $this->assertNotNull($obj);
+    }
+
+    public function testUserAgent()
+    {
+        $userAgent = 'RFCrawler';
+        $obj = new RFCrawler('/r/gamedevscreens/', $userAgent);
+        $this->assertEquals($userAgent, ini_get('user_agent'));
+    }
+
     public function testFetchFromRss()
     {
         $obj = new RFCrawler('/r/gamedevscreens/');
