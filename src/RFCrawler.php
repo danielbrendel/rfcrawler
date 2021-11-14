@@ -41,6 +41,8 @@ class RFCrawler {
 	/**
 	 * Constructor for instantiation
 	 * 
+	 * @param $url
+	 * @param $user_agent
 	 * @return void
 	 */
 	public function __construct($url, $user_agent = '')
