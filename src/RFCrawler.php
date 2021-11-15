@@ -118,10 +118,11 @@ class RFCrawler {
 	 * Fetch subreddit posts from RSS
 	 * 
 	 * @param $type
+	 * @param $url_filter
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function fetchFromRss($type = self::FETCH_TYPE_NEW)
+	public function fetchFromRss($type = self::FETCH_TYPE_NEW, $url_filter = array())
 	{
 		try {
 			$result = array();
@@ -133,9 +134,22 @@ class RFCrawler {
 			foreach ($xml->entry as $x) {
 				$item = new \stdClass();
 				
+				$item->media = $this->extractImage($x->content);
+				$cont = false;
+				
+				foreach ($url_filter as $uf) {
+					if (strpos($item->media, $uf) !== false) {
+						$cont = true;
+						break;
+					}
+				}
+				
+				if ($cont === true) {
+					continue;
+				}
+
 				$item->title = $x->title;
 				$item->link = $x->link['href'];
-				$item->media = $this->extractImage($x->content);
 				$item->author = $x->author;
 
 				$result[] = $item;
