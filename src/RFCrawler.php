@@ -36,55 +36,35 @@ class RFCrawler {
 	 * 
 	 * URL to subreddit
 	 */
-	public string $url;
+	private string $url;
+
+	/**
+	 * @var string
+	 * 
+	 * Used user agent
+	 */
+	private string $user_agent;
+
+	/**
+	 * @var string
+	 * 
+	 * Temporary old user agent
+	 */
+	private string $old_user_agent;
 	
 	/**
 	 * Constructor for instantiation
 	 * 
-	 * @param $url
-	 * @param $user_agent
+	 * @param string $url
+	 * @param string $user_agent
 	 * @return void
 	 */
-	public function __construct($url, $user_agent = '')
+	public function __construct(string $url, string $user_agent = '')
 	{
 		$this->url = self::URL_REDDIT . '/' . $url;
-
-		if ($user_agent !== '') {
-			ini_set('user_agent', $user_agent);
-		}
+		$this->user_agent = $user_agent;
 	}
-	
-	/**
-	 * Fetch subreddit posts from RSS
-	 * 
-	 * @param $type
-	 * @return array
-	 * @throws \Exception
-	 */
-	public function fetchFromRss($type = self::FETCH_TYPE_NEW)
-	{
-		try {
-			$result = array();
-			
-			$xml = simplexml_load_file("{$this->url}{$type}/.rss");
-			
-			foreach ($xml->entry as $x) {
-				$item = new \stdClass();
-				
-				$item->title = $x->title;
-				$item->link = $x->link['href'];
-				$item->media = $this->extractImage($x->content);
-				$item->author = $x->author;
 
-				$result[] = $item;
-			}
-			
-			return $result;
-		} catch (\Exception $e) {
-			throw $e;
-		}
-	}
-	
 	/**
 	 * Fetch subreddit posts from JSON
 	 * 
@@ -97,6 +77,8 @@ class RFCrawler {
 	{
 		try {
 			$result = array();
+
+			$this->storeUserAgent();
 			
 			$data = json_decode(file_get_contents("{$this->url}{$type}/.json"));
 			
@@ -123,6 +105,43 @@ class RFCrawler {
 
 				$result[] = $item;
 			}
+
+			$this->resetUserAgent();
+			
+			return $result;
+		} catch (\Exception $e) {
+			throw $e;
+		}
+	}
+	
+	/**
+	 * Fetch subreddit posts from RSS
+	 * 
+	 * @param $type
+	 * @return array
+	 * @throws \Exception
+	 */
+	public function fetchFromRss($type = self::FETCH_TYPE_NEW)
+	{
+		try {
+			$result = array();
+
+			$this->storeUserAgent();
+			
+			$xml = simplexml_load_file("{$this->url}{$type}/.rss");
+			
+			foreach ($xml->entry as $x) {
+				$item = new \stdClass();
+				
+				$item->title = $x->title;
+				$item->link = $x->link['href'];
+				$item->media = $this->extractImage($x->content);
+				$item->author = $x->author;
+
+				$result[] = $item;
+			}
+
+			$this->resetUserAgent();
 			
 			return $result;
 		} catch (\Exception $e) {
@@ -165,6 +184,31 @@ class RFCrawler {
 			return '';
 		} catch (\Exception $e) {
 			throw $e;
+		}
+	}
+
+	/**
+	 * Store custom user agent and backup old
+	 * 
+	 * @return void
+	 */
+	private function storeUserAgent()
+	{
+		if ($this->user_agent !== '') {
+			$this->old_user_agent = ini_get('user_agent');
+			ini_set('user_agent', $this->user_agent);
+		}
+	}
+
+	/**
+	 * Restore old user agent
+	 * 
+	 * @return void
+	 */
+	private function resetUserAgent()
+	{
+		if ($this->user_agent !== '') {
+			ini_set('user_agent', $this->old_user_agent);
 		}
 	}
 }
