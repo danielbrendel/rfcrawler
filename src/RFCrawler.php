@@ -96,8 +96,10 @@ class RFCrawler {
 					continue;
 				}
 
-				if (!$this->containsAny($post->data->url, $url_must_contain)) {
-					continue;
+				if (count($url_must_contain) > 0) {
+					if (!$this->containsAny($post->data->url, $url_must_contain)) {
+						continue;
+					}
 				}
 				
 				$item = new \stdClass();
@@ -154,8 +156,10 @@ class RFCrawler {
 					continue;
 				}
 
-				if (!$this->containsAny($item->media, $url_must_contain)) {
-					continue;
+				if (count($url_must_contain) > 0) {
+					if (!$this->containsAny($item->media, $url_must_contain)) {
+						continue;
+					}
 				}
 
 				$item->title = $x->title;
