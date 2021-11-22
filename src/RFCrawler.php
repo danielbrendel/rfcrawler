@@ -73,7 +73,7 @@ class RFCrawler {
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function fetchFromJson($type = self::FETCH_TYPE_NEW, $url_filter = array())
+	public function fetchFromJson($type = self::FETCH_TYPE_NEW, $url_filter = array(), $url_must_contain = array())
 	{
 		try {
 			$result = array();
@@ -93,6 +93,10 @@ class RFCrawler {
 				}
 				
 				if ($cont === true) {
+					continue;
+				}
+
+				if (!$this->containsAny($post->data->url, $url_must_contain)) {
 					continue;
 				}
 				
@@ -119,10 +123,11 @@ class RFCrawler {
 	 * 
 	 * @param $type
 	 * @param $url_filter
+	 * @param $url_must_contain
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function fetchFromRss($type = self::FETCH_TYPE_NEW, $url_filter = array())
+	public function fetchFromRss($type = self::FETCH_TYPE_NEW, $url_filter = array(), $url_must_contain = array())
 	{
 		try {
 			$result = array();
@@ -148,6 +153,10 @@ class RFCrawler {
 					continue;
 				}
 
+				if (!$this->containsAny($item->media, $url_must_contain)) {
+					continue;
+				}
+
 				$item->title = $x->title;
 				$item->link = $x->link['href'];
 				$item->author = $x->author;
@@ -161,6 +170,27 @@ class RFCrawler {
 		} catch (\Exception $e) {
 			throw $e;
 		}
+	}
+
+	/**
+	 * Check if URL contains at least one of the required entries
+	 * 
+	 * @param string $url
+	 * @param array $req
+	 * @return bool
+	 */
+	private function containsAny(string $url, array $req)
+	{
+		$containsAny = false;
+		
+		foreach ($req as $item) {
+			if (strpos($url, $item) !== false) {
+				$containsAny = true;
+				break;
+			}
+		}
+		
+		return $containsAny;
 	}
 	
 	/**
