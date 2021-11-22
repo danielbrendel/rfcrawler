@@ -106,6 +106,7 @@ class RFCrawler {
 				$item->link = self::URL_REDDIT . "{$post->data->permalink}";
 				$item->media = $post->data->url;
 				$item->author = $post->data->author;
+				$item->nsfw = $post->data->whitelist_status === 'promo_adult_nsfw';
 
 				$result[] = $item;
 			}
