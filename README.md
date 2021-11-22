@@ -26,6 +26,7 @@ foreach ($posts as $post) {
     // - $post->link contains the link to the Reddit post
     // - $post->media contains an image if the post is an image
     // - $post->author contains the author information (either only name when fetching from JSON or name for username and uri for link to profile)
+    // - $nsfw Flag indicator if content is marked as NSFW (only available for JSON queries)
 }
 ```
 
