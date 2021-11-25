@@ -110,6 +110,15 @@ class RFCrawler {
 				$item->author = $post->data->author;
 				$item->nsfw = $post->data->whitelist_status === 'promo_adult_nsfw';
 
+				if (isset($post->data->media->reddit_video)) {
+					$qmark = strpos($post->data->media->reddit_video->fallback_url, '?');
+					if ($qmark !== false) {
+						$item->media = substr($post->data->media->reddit_video->fallback_url, 0, $qmark);
+					} else {
+						$item->media = $post->data->media->reddit_video->fallback_url;
+					}
+				}
+
 				$result[] = $item;
 			}
 
