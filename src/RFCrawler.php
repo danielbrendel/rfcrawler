@@ -69,18 +69,26 @@ class RFCrawler {
 	 * Fetch subreddit posts from JSON
 	 * 
 	 * @param $type
+	 * @param $after
 	 * @param $url_filter
+	 * @param $url_must_contain
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function fetchFromJson($type = self::FETCH_TYPE_NEW, $url_filter = array(), $url_must_contain = array())
+	public function fetchFromJson($type = self::FETCH_TYPE_NEW, $after = '', $url_filter = array(), $url_must_contain = array())
 	{
 		try {
 			$result = array();
 
 			$this->storeUserAgent();
 			
-			$data = json_decode(file_get_contents("{$this->url}{$type}/.json"));
+			$url = "{$this->url}{$type}/.json";
+
+			if ((is_string($after)) && (strlen($after) > 0)) {
+				$url .= "?after={$after}";
+			}
+
+			$data = json_decode(file_get_contents($url));
 			
 			foreach ($data->data->children as $post) {
 				$cont = false;
