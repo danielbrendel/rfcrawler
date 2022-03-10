@@ -144,19 +144,26 @@ class RFCrawler {
 	 * Fetch subreddit posts from RSS
 	 * 
 	 * @param $type
+	 * @param $after
 	 * @param $url_filter
 	 * @param $url_must_contain
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function fetchFromRss($type = self::FETCH_TYPE_NEW, $url_filter = array(), $url_must_contain = array())
+	public function fetchFromRss($type = self::FETCH_TYPE_NEW, $after = '', $url_filter = array(), $url_must_contain = array())
 	{
 		try {
 			$result = array();
 
 			$this->storeUserAgent();
+
+			$url = "{$this->url}{$type}/.rss";
+
+			if ((is_string($after)) && (strlen($after) > 0)) {
+				$url .= "?after={$after}";
+			}
 			
-			$xml = simplexml_load_file("{$this->url}{$type}/.rss");
+			$xml = simplexml_load_file($url);
 			
 			foreach ($xml->entry as $x) {
 				$item = new \stdClass();
