@@ -70,6 +70,7 @@ final class RFCrawlerTest extends TestCase
             $this->assertTrue(isset($post->author));
             $this->assertTrue(isset($post->author->name));
             $this->assertTrue(isset($post->author->uri));
+            $this->assertTrue(isset($post->all));
         }
     }
 }

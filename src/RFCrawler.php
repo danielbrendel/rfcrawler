@@ -185,6 +185,7 @@ class RFCrawler {
 				$item->link = $x->link['href'];
 				$item->author = $x->author;
 				$item->nsfw = null;
+				$item->all = $x;
 
 				$result[] = $item;
 			}
