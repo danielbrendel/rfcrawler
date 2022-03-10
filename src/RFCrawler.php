@@ -118,6 +118,8 @@ class RFCrawler {
 						$item->media = $post->data->media->reddit_video->fallback_url;
 					}
 				}
+				
+				$item->all = $post->data;
 
 				$result[] = $item;
 			}
