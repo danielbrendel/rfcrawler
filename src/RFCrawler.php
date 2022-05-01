@@ -30,6 +30,7 @@ class RFCrawler {
 	public const FETCH_TYPE_NEW = 'new';
 	public const FETCH_TYPE_HOT = 'hot';
 	public const FETCH_TYPE_TOP = 'top';
+	public const FETCH_TYPE_IGNORE = '';
 	
 	/**
 	 * @var string
@@ -89,8 +90,14 @@ class RFCrawler {
 			}
 
 			$data = json_decode(file_get_contents($url));
+
+			if (is_array($data)) {
+				$children = $data[0]->data->children;
+			} else {
+				$children = $data->data->children;
+			}
 			
-			foreach ($data->data->children as $post) {
+			foreach ($children as $post) {
 				$cont = false;
 				
 				foreach ($url_filter as $uf) {
