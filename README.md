@@ -16,9 +16,9 @@ require_once __DIR__ . '/../vendor/autoload.php'; //Don't forget to use Composer
 
 use RFCrawler\RFCrawler; //Require the package class you want to use
 
-$obj = new RFCrawler('URL to subreddit or post here', 'optional user agent'); //Instantiate a new object instance to your feed
-$postsJson = $obj->fetchFromJson(...); //Fetch posts from JSON. Additionally pass one of the FETCH_TYPE_* constants in order to specify the sorting type, secondly the name of the item to fetch content afterwards if pagination is required, thirdly an array with URLS of which to filter from the posts and fourthly an array of tokens that the media URL must contain at least one of
-$postsRss = $obj->fetchFromRss(...); //Fetch posts from RSS. Additionally pass one of the FETCH_TYPE_* constants in order to specify the sorting type, secondly the name of the item to fetch content afterwards if pagination is required, thirdly an array with URLS of which to filter from the posts and fourthly an array of tokens that the media URL must contain at least one of
+$obj = new RFCrawler('URL to subreddit or post here', 'optional user agent', array of optional URL parameters); //Instantiate a new object instance to your feed
+$postsJson = $obj->fetchFromJson(...); //Fetch posts from JSON. Additionally pass one of the FETCH_TYPE_* constants in order to specify the sorting type, secondly an array with URLS of which to filter from the posts and thirdly an array of tokens that the media URL must contain at least one of
+$postsRss = $obj->fetchFromRss(...); //Fetch posts from RSS. Additionally pass one of the FETCH_TYPE_* constants in order to specify the sorting type, secondly an array with URLS of which to filter from the posts and thirdly an array of tokens that the media URL must contain at least one of
 
 foreach ($posts as $post) {
     //Access the following attributes from $post:
@@ -26,7 +26,6 @@ foreach ($posts as $post) {
     // - $post->link contains the link to the Reddit post
     // - $post->media contains a link to an image if the post is an image or, if using JSON, may contain a link to a video if the post is a video
     // - $post->author contains the author information (either only name when fetching from JSON or name for username and uri for link to profile)
-    // - $nsfw Flag indicator if content is marked as NSFW (only available for JSON queries)
     // - $post->all All original data entries
 }
 ```

@@ -28,7 +28,7 @@ final class RFCrawlerTest extends TestCase
     {
         $oldUserAgent = ini_get('user_agent');
 
-        $obj = new RFCrawler('/r/gamedevscreens/', self::TEST_USER_AGENT);
+        $obj = new RFCrawler('r/gamedevscreens', self::TEST_USER_AGENT);
         $storeUserAgent = self::getMethod('storeUserAgent');
         $resetUserAgent = self::getMethod('resetUserAgent');
 
@@ -41,7 +41,7 @@ final class RFCrawlerTest extends TestCase
 
     public function testFetchFromJson()
     {
-        $obj = new RFCrawler('/r/gamedevscreens/', self::TEST_USER_AGENT);
+        $obj = new RFCrawler('r/gamedevscreens', self::TEST_USER_AGENT);
         $posts = $obj->fetchFromJson();
         
         $this->assertTrue(is_array($posts));
@@ -51,14 +51,13 @@ final class RFCrawlerTest extends TestCase
             $this->assertTrue(isset($post->link));
             $this->assertTrue(isset($post->media));
             $this->assertTrue(isset($post->author));
-            $this->assertTrue(isset($post->author));
 			$this->assertTrue(isset($post->all));
         }
     }
 
     public function testFetchFromRss()
     {
-        $obj = new RFCrawler('/r/gamedevscreens/', self::TEST_USER_AGENT);
+        $obj = new RFCrawler('/r/gamedevscreens', self::TEST_USER_AGENT);
         $posts = $obj->fetchFromRss();
         
         $this->assertTrue(is_array($posts));

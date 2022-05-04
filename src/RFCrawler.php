@@ -40,6 +40,13 @@ class RFCrawler {
 	private string $url;
 
 	/**
+	 * @var array
+	 * 
+	 * Array of optional URL arguments
+	 */
+	private array $args = array();
+
+	/**
 	 * @var string
 	 * 
 	 * Used user agent
@@ -58,25 +65,26 @@ class RFCrawler {
 	 * 
 	 * @param string $url
 	 * @param string $user_agent
+	 * @param array $args
 	 * @return void
 	 */
-	public function __construct(string $url, string $user_agent = '')
+	public function __construct(string $url, string $user_agent = '', $args = array())
 	{
 		$this->url = self::URL_REDDIT . '/' . $url;
 		$this->user_agent = $user_agent;
+		$this->args = $args;
 	}
 
 	/**
 	 * Fetch subreddit posts from JSON
 	 * 
 	 * @param $type
-	 * @param $after
 	 * @param $url_filter
 	 * @param $url_must_contain
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function fetchFromJson($type = self::FETCH_TYPE_NEW, $after = '', $url_filter = array(), $url_must_contain = array())
+	public function fetchFromJson($type = self::FETCH_TYPE_IGNORE, $url_filter = array(), $url_must_contain = array())
 	{
 		try {
 			$result = array();
@@ -84,13 +92,19 @@ class RFCrawler {
 			$this->storeUserAgent();
 			
 			$url = "{$this->url}{$type}/.json";
-
-			if ((is_string($after)) && (strlen($after) > 0)) {
-				$url .= "?after={$after}";
+			$firstArg = false;
+			
+			foreach ($this->args as $key => $value) {
+				if (!$firstArg) {
+					$url .= "?{$key}={$value}";
+					$firstArg = true;
+				} else {
+					$url .= "&{$key}={$value}";
+				}
 			}
-
+			
 			$data = json_decode(file_get_contents($url));
-
+			
 			if (is_array($data)) {
 				$children = $data[0]->data->children;
 			} else {
@@ -98,10 +112,25 @@ class RFCrawler {
 			}
 			
 			foreach ($children as $post) {
+				$postUrl = '';
+				$postTitle = '';
+
+				if (isset($post->data->url)) {
+					$postUrl = $post->data->url;
+				} else {
+					$postUrl = $post->data->link_url;
+				}
+
+				if (isset($post->data->title)) {
+					$postTitle = $post->data->title;
+				} else {
+					$postTitle = $post->data->link_title;
+				}
+
 				$cont = false;
 				
 				foreach ($url_filter as $uf) {
-					if (strpos($post->data->url, $uf) !== false) {
+					if (strpos($postUrl, $uf) !== false) {
 						$cont = true;
 						break;
 					}
@@ -112,18 +141,17 @@ class RFCrawler {
 				}
 
 				if (count($url_must_contain) > 0) {
-					if (!$this->containsAny($post->data->url, $url_must_contain)) {
+					if (!$this->containsAny($postUrl, $url_must_contain)) {
 						continue;
 					}
 				}
 				
 				$item = new \stdClass();
 				
-				$item->title = $post->data->title;
+				$item->title = $postTitle;
 				$item->link = self::URL_REDDIT . "{$post->data->permalink}";
-				$item->media = $post->data->url;
+				$item->media = $postUrl;
 				$item->author = $post->data->author;
-				$item->nsfw = $post->data->whitelist_status === 'promo_adult_nsfw';
 
 				if (isset($post->data->media->reddit_video)) {
 					$qmark = strpos($post->data->media->reddit_video->fallback_url, '?');
@@ -151,13 +179,12 @@ class RFCrawler {
 	 * Fetch subreddit posts from RSS
 	 * 
 	 * @param $type
-	 * @param $after
 	 * @param $url_filter
 	 * @param $url_must_contain
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function fetchFromRss($type = self::FETCH_TYPE_NEW, $after = '', $url_filter = array(), $url_must_contain = array())
+	public function fetchFromRss($type = self::FETCH_TYPE_IGNORE, $url_filter = array(), $url_must_contain = array())
 	{
 		try {
 			$result = array();
@@ -166,8 +193,15 @@ class RFCrawler {
 
 			$url = "{$this->url}{$type}/.rss";
 
-			if ((is_string($after)) && (strlen($after) > 0)) {
-				$url .= "?after={$after}";
+			$firstArg = false;
+			
+			foreach ($this->args as $key => $value) {
+				if (!$firstArg) {
+					$url .= "?{$key}={$value}";
+					$firstArg = true;
+				} else {
+					$url .= "&{$key}={$value}";
+				}
 			}
 			
 			$xml = simplexml_load_file($url);
@@ -198,7 +232,6 @@ class RFCrawler {
 				$item->title = $x->title;
 				$item->link = $x->link['href'];
 				$item->author = $x->author;
-				$item->nsfw = null;
 				$item->all = $x;
 
 				$result[] = $item;
